@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>MAPA CULTURAL DE MONTES CLAROS</title>
+  <style>
+    #map { width: 100%; height: 90vh; }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+<h2>Mapa cultural de Montes Claros</h2>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  // Inicializa o mapa no centro do Brasil com zoom 4
+  const map = L.map('map').setView([-15.7801, -47.9292], 4);
+
+  // Usa o mapa do OpenStreetMap
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Dados dos artistas: nome, lat, lng, telefone, endereço, imagem e Instagram
+  const artistas = [
+    {
+      nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)",
+      lat: -16.71839,
+      lng: -43.87261,
+      telefone: "+55 38 98836-6925",
+      endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
+      imagem: "https://i.imgur.com/Rs78Tbn.jpeg",
+      instagram: "https://www.instagram.com/cordaodeouromoc/"
+    },
+    {
+      nome: "Mestre Ton (Capoeira)",
+      lat: -16.71839,
+      lng: -43.87261,
+      telefone: "+55 38 98836-6925",
+      endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
+      imagem: "https://i.imgur.com/Rs78Tbn.jpeg",
+      instagram: "https://www.instagram.com/ton_cdo/"
+    }
+  ];
+
+  // Adiciona marcadores e popups com as informações
+  artistas.forEach(artista => {
+    const marcador = L.marker([artista.lat, artista.lng]).addTo(map);
+
+    let popupContent = `<b>${artista.nome}</b><br>
+                        Telefone: ${artista.telefone}<br>
+                        Endereço: ${artista.endereco}`;
+
+    // Se tiver imagem, exibe a imagem
+    if (artista.imagem) {
+      popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" width="200" style="border-radius: 10px; margin-top: 5px;">`;
+    }
+
+    // Se tiver Instagram, adiciona link
+    if (artista.instagram) {
+      popupContent += `<br><a href="${artista.instagram}" target="_blank" style="color: #d62976; text-decoration: none;">🔗 Instagram</a>`;
+    }
+
+    marcador.bindPopup(popupContent);
+  });
+</script>
+
+</body>
+</html>
