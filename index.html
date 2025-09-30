@@ -15,12 +15,13 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // Inicializa o mapa fixo em Montes Claros com zoom 13
-  const map = L.map('map').setView([-16.7286, -43.8578], 13);
+  // Centraliza em Montes Claros com zoom bem próximo (18)
+  const map = L.map('map').setView([-16.71839, -43.87261], 18);
 
-  // Usa o mapa do OpenStreetMap
+  // Tiles OpenStreetMap
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
   }).addTo(map);
 
   // Dados dos artistas
