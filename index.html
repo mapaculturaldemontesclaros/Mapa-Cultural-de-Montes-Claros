@@ -15,24 +15,23 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // Centraliza em Montes Claros com zoom 13
-  const map = L.map('map').setView([-16.7286, -43.8578], 13);
+  // Inicializa o mapa no centro do Brasil com zoom 4
+  const map = L.map('map').setView([-15.7801, -47.9292], 4);
 
-  // Tiles OpenStreetMap
+  // Usa o mapa do OpenStreetMap
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-    maxZoom: 19
+    attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  // Dados dos artistas
+  // Dados dos artistas: nome, lat, lng, telefone, endereço, imagem e Instagram
   const artistas = [
     {
       nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)",
-      lat: -16.71840,
-      lng: -43.87261,
+      lat: -16.71839,
+      lng: -43.87262,
       telefone: "+55 38 98836-6925",
       endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
-      imagem: "https://imgur.com/a/4UlzBPz",
+      imagem: "https://i.imgur.com/Rs78Tbn.jpeg",
       instagram: "https://www.instagram.com/cordaodeouromoc/"
     },
     {
@@ -46,7 +45,7 @@
     }
   ];
 
-  // Adiciona marcadores e popups
+  // Adiciona marcadores e popups com as informações
   artistas.forEach(artista => {
     const marcador = L.marker([artista.lat, artista.lng]).addTo(map);
 
@@ -54,10 +53,12 @@
                         Telefone: ${artista.telefone}<br>
                         Endereço: ${artista.endereco}`;
 
+    // Se tiver imagem, exibe a imagem
     if (artista.imagem) {
       popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" width="200" style="border-radius: 10px; margin-top: 5px;">`;
     }
 
+    // Se tiver Instagram, adiciona link
     if (artista.instagram) {
       popupContent += `<br><a href="${artista.instagram}" target="_blank" style="color: #d62976; text-decoration: none;">🔗 Instagram</a>`;
     }
