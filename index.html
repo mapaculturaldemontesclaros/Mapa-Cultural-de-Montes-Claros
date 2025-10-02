@@ -40,12 +40,12 @@
 const map = L.map('map').setView([-16.71859, -43.87262], 13);
 
 // Camada satélite Esri
-const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
 }).addTo(map);
 
-// Camada de labels (nomes de bairros e ruas)
-const labels = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+// Camada de labels apenas (nomes de bairros e ruas)
+L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Map data © Esri — Labels'
 }).addTo(map);
 
