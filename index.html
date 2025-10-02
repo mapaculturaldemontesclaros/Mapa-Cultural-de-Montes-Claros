@@ -1,152 +1,119 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mapa Cultural de Montes Claros</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      color: #333;
-    }
-    header {
-      background: #2c3e50;
-      color: white;
-      padding: 15px;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-    }
-    #map { 
-      width: 100%; 
-      height: 90vh; 
-    }
-    .popup-img {
-      border-radius: 10px;
-      margin-top: 5px;
-      max-width: 220px;
-    }
-    .popup-link {
-      display: inline-flex;
-      align-items: center;
-      margin-top: 8px;
-      padding: 6px 10px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 14px;
-      gap: 6px;
-    }
-    .popup-instagram {
-      background: #d62976;
-      color: white;
-    }
-    .popup-instagram:hover {
-      background: #b71c5c;
-    }
-    .popup-whatsapp {
-      background: #25D366;
-      color: white;
-    }
-    .popup-whatsapp:hover {
-      background: #1da851;
-    }
-    .popup-icon {
-      width: 18px;
-      height: 18px;
-    }
-  </style>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<meta charset="UTF-8" />
+<title>Mapa Cultural de Montes Claros - Filtros</title>
+<style>
+body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #333; }
+header { background: #2c3e50; color: white; padding: 15px; text-align: center; }
+header h1 { margin: 0; font-size: 1.8rem; }
+#map { width: 100%; height: 85vh; }
+.filters { padding: 10px 15px; background: #fff; display: flex; gap: 20px; align-items: center; border-bottom: 1px solid #ccc; }
+.filters label { font-weight: bold; }
+.popup-img { border-radius: 10px; margin-top: 5px; max-width: 220px; }
+.popup-link { display: inline-flex; align-items: center; margin-top: 8px; padding: 6px 10px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px; gap: 6px; }
+.popup-instagram { background: #d62976; color: white; }
+.popup-instagram:hover { background: #b71c5c; }
+.popup-whatsapp { background: #25D366; color: white; }
+.popup-whatsapp:hover { background: #1da851; }
+.popup-icon { width: 18px; height: 18px; }
+.custom-marker { position: relative; width: 50px; height: 50px; text-align: center; }
+.custom-marker img.avatar { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; }
+.custom-marker svg.icon { width: 32px; height: 32px; }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-
 <header>
-  <h1>📍 Mapa Cultural de Montes Claros</h1>
-  <p>Conheça artistas, espaços culturais e iniciativas da cidade</p>
+<h1>📍 Mapa Cultural de Montes Claros</h1>
+<p>Filtre por categoria para visualizar Capoeira ou Espaço Cultural</p>
 </header>
+
+<div class="filters">
+  <label><input type="checkbox" id="capoeiraCheckbox" checked> Capoeira</label>
+  <label><input type="checkbox" id="espacoCheckbox" checked> Espaço Cultural</label>
+</div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // Inicializa o mapa centralizado em Montes Claros
-  const map = L.map('map').setView([-16.71859, -43.87262], 12);
+// Inicializa o mapa centralizado em Montes Claros com zoom 12.5
+const map = L.map('map').setView([-16.71859, -43.87262], 12.5);
 
-  // Usa o mapa do OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
-  }).addTo(map);
+// Camada satélite Esri
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles © Esri &mdash; Source: Esri, USGS, USDA, AeroGRID, IGN, and the GIS User Community'
+}).addTo(map);
 
-  // Ícones personalizados por categoria
-  const icons = {
-    capoeira: L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/616/616408.png', // bonequinho verde
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -28]
-    }),
-    espaco: L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/235/235861.png', // casinha marrom
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -28]
-    })
-  };
+// Dados dos artistas
+const artistas = [
+  { nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)", lat: -16.71859, lng: -43.87262, categoria: "espaco", telefone: "+5538988366925", endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG", avatar: "https://i.imgur.com/grvPSh2.png", instagram: "https://www.instagram.com/cordaodeouromoc/" },
+  { nome: "Mestre Ton (Capoeira)", lat: -16.71839, lng: -43.87261, categoria: "capoeira", telefone: "+5538988366925", endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG", avatar: "https://i.imgur.com/Rs78Tbn.jpeg", instagram: "https://www.instagram.com/ton_cdo/" }
+];
 
-  // Dados dos artistas
-  const artistas = [
-    {
-      nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)",
-      lat: -16.71859,
-      lng: -43.87262,
-      categoria: "espaco",
-      telefone: "+5538988366925",
-      endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
-      imagem: "https://i.imgur.com/grvPSh2.png",
-      instagram: "https://www.instagram.com/cordaodeouromoc/"
-    },
-    {
-      nome: "Mestre Ton (Capoeira)",
-      lat: -16.71839,
-      lng: -43.87261,
-      categoria: "capoeira",
-      telefone: "+5538988366925",
-      endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
-      imagem: "https://i.imgur.com/Rs78Tbn.jpeg",
-      instagram: "https://www.instagram.com/ton_cdo/"
-    }
-  ];
+// Arrays para armazenar os marcadores por categoria
+const marcadoresCapoeira = [];
+const marcadoresEspaco = [];
 
-  // Adiciona marcadores e popups
-  artistas.forEach(artista => {
-    const marcador = L.marker([artista.lat, artista.lng], { icon: icons[artista.categoria] }).addTo(map);
+// Cria marcadores
+artistas.forEach(artista => {
+  let iconHtml;
+  if (artista.categoria === 'capoeira') {
+    iconHtml = `<div class="custom-marker">
+      <svg class="icon" viewBox="0 0 24 24" fill="green">
+        <circle cx="12" cy="6" r="3"/>
+        <path d="M12 9 L12 20 M9 12 L15 12" stroke="green" stroke-width="2"/>
+      </svg>
+      <img src="${artista.avatar}" class="avatar">
+    </div>`;
+  } else {
+    iconHtml = `<div class="custom-marker">
+      <svg class="icon" viewBox="0 0 24 24" fill="saddlebrown">
+        <path d="M12 3 L2 12 H5 V20 H19 V12 H22 Z"/>
+      </svg>
+      <img src="${artista.avatar}" class="avatar">
+    </div>`;
+  }
 
-    let popupContent = `<b>${artista.nome}</b><br>📍 ${artista.endereco}`;
+  const customIcon = L.divIcon({ className: '', html: iconHtml, iconSize: [50, 50], iconAnchor: [25, 50], popupAnchor: [0, -50] });
+  const marcador = L.marker([artista.lat, artista.lng], { icon: customIcon }).addTo(map);
 
-    if (artista.imagem) {
-      popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" class="popup-img">`;
-    }
+  let popupContent = `<b>${artista.nome}</b><br>📍 ${artista.endereco}`;
+  if (artista.telefone) {
+    popupContent += `<br><a href="https://wa.me/${artista.telefone}" target="_blank" class="popup-link popup-whatsapp">
+      <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" class="popup-icon" alt="WhatsApp"> WhatsApp
+    </a>`;
+  }
+  if (artista.instagram) {
+    popupContent += `<br><a href="${artista.instagram}" target="_blank" class="popup-link popup-instagram">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" class="popup-icon" alt="Instagram"> Instagram
+    </a>`;
+  }
 
-    // Botão WhatsApp
-    if (artista.telefone) {
-      popupContent += `<br><a href="https://wa.me/${artista.telefone}" target="_blank" class="popup-link popup-whatsapp">
-                         <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" class="popup-icon" alt="WhatsApp"> WhatsApp
-                       </a>`;
-    }
+  marcador.bindPopup(popupContent);
 
-    // Botão Instagram
-    if (artista.instagram) {
-      popupContent += `<br><a href="${artista.instagram}" target="_blank" class="popup-link popup-instagram">
-                         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" class="popup-icon" alt="Instagram"> Instagram
-                       </a>`;
-    }
+  // Armazena o marcador na categoria correspondente
+  if (artista.categoria === 'capoeira') marcadoresCapoeira.push(marcador);
+  if (artista.categoria === 'espaco') marcadoresEspaco.push(marcador);
+});
 
-    marcador.bindPopup(popupContent);
+// Função para mostrar/ocultar marcadores
+function toggleMarkers(category, visible) {
+  const array = category === 'capoeira' ? marcadoresCapoeira : marcadoresEspaco;
+  array.forEach(marker => {
+    if (visible) map.addLayer(marker);
+    else map.removeLayer(marker);
   });
-</script>
+}
 
+// Eventos dos checkboxes
+document.getElementById('capoeiraCheckbox').addEventListener('change', e => {
+  toggleMarkers('capoeira', e.target.checked);
+});
+document.getElementById('espacoCheckbox').addEventListener('change', e => {
+  toggleMarkers('espaco', e.target.checked);
+});
+</script>
 </body>
 </html>
