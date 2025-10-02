@@ -37,47 +37,16 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const map = L.map('map').setView([-16.71859, -43.87262], 12);
+const map = L.map('map').setView([-16.71859, -43.87262], 13);
 
 // Camada satélite Esri
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
 }).addTo(map);
 
-// Exemplo GeoJSON de bairros (substituir pelo arquivo real)
-const bairrosGeoJSON = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": { "nome": "Todos os Santos", "categoria": "capoeira" },
-      "geometry": { "type": "Polygon", "coordinates": [[
-        [-43.875, -16.72], [-43.87, -16.72], [-43.87, -16.718], [-43.875, -16.718], [-43.875, -16.72]
-      ]] }
-    },
-    {
-      "type": "Feature",
-      "properties": { "nome": "Centro", "categoria": "espaco" },
-      "geometry": { "type": "Polygon", "coordinates": [[
-        [-43.872, -16.721], [-43.869, -16.721], [-43.869, -16.718], [-43.872, -16.718], [-43.872, -16.721]
-      ]] }
-    }
-  ]
-};
-
-// Adiciona bairros com cores diferenciadas e labels permanentes
-L.geoJSON(bairrosGeoJSON, {
-  style: feature => ({
-    fillColor: feature.properties.categoria === 'capoeira' ? 'green' : 'saddlebrown',
-    weight: 2,
-    color: 'white',
-    fillOpacity: 0.5
-  }),
-  onEachFeature: (feature, layer) => {
-    if (feature.properties && feature.properties.nome) {
-      layer.bindTooltip(feature.properties.nome, { permanent: true, direction: 'center' });
-    }
-  }
+// Camada de labels (nomes de bairros e ruas)
+const labels = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Map data © Esri — Labels'
 }).addTo(map);
 
 // Dados de artistas
