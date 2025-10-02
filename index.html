@@ -6,21 +6,45 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
   body { margin: 0; font-family: Arial, sans-serif; }
-  #map { width: 100%; height: 90vh; }
+  header { background: #2c3e50; color: white; padding: 15px; text-align: center; }
+  header h1 { margin: 0; font-size: 1.8rem; }
+  #map { width: 100%; height: 85vh; }
+  .filters { padding: 10px 15px; background: #fff; display: flex; gap: 20px; align-items: center; border-bottom: 1px solid #ccc; }
+  .filters label { font-weight: bold; }
+  .custom-marker { position: relative; width: 50px; height: 50px; text-align: center; }
+  .custom-marker img.avatar { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 28px; height: 28px; border-radius: 50%; border: 2px solid white; }
+  .custom-marker svg.icon { width: 32px; height: 32px; }
+  .popup-link { display: inline-flex; align-items: center; margin-top: 5px; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px; gap: 5px; }
+  .popup-instagram { background: #d62976; color: white; }
+  .popup-instagram:hover { background: #b71c5c; }
+  .popup-whatsapp { background: #25D366; color: white; }
+  .popup-whatsapp:hover { background: #1da851; }
+  .popup-icon { width: 18px; height: 18px; }
 </style>
 </head>
 <body>
+<header>
+  <h1>📍 Mapa Cultural de Montes Claros</h1>
+  <p>Filtre por categoria para visualizar Capoeira ou Espaço Cultural</p>
+</header>
+
+<div class="filters">
+  <label><input type="checkbox" id="capoeiraCheckbox" checked> Capoeira</label>
+  <label><input type="checkbox" id="espacoCheckbox" checked> Espaço Cultural</label>
+</div>
+
 <div id="map"></div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const map = L.map('map').setView([-16.71859, -43.87262], 13);
+const map = L.map('map').setView([-16.71859, -43.87262], 12);
 
-// Satélite Esri
+// Camada satélite Esri
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
 }).addTo(map);
 
-// Exemplo GeoJSON de bairros
+// Exemplo GeoJSON de bairros (substituir pelo arquivo real)
 const bairrosGeoJSON = {
   "type": "FeatureCollection",
   "features": [
@@ -41,25 +65,51 @@ const bairrosGeoJSON = {
   ]
 };
 
-// Estilo baseado na categoria
-function style(feature) {
-  return {
+// Adiciona bairros com cores diferenciadas e labels permanentes
+L.geoJSON(bairrosGeoJSON, {
+  style: feature => ({
     fillColor: feature.properties.categoria === 'capoeira' ? 'green' : 'saddlebrown',
     weight: 2,
     color: 'white',
     fillOpacity: 0.5
-  };
-}
-
-// Adiciona GeoJSON e labels permanentes
-L.geoJSON(bairrosGeoJSON, {
-  style: style,
-  onEachFeature: function(feature, layer) {
+  }),
+  onEachFeature: (feature, layer) => {
     if (feature.properties && feature.properties.nome) {
       layer.bindTooltip(feature.properties.nome, { permanent: true, direction: 'center' });
     }
   }
 }).addTo(map);
+
+// Dados de artistas
+const artistas = [
+  { nome: "Grupo Cordão de Ouro Montes Claros", lat: -16.71859, lng: -43.87262, categoria: "espaco", telefone: "+5538988366925", endereco: "Rua São Paulo, 833", avatar: "https://i.imgur.com/grvPSh2.png", instagram: "https://www.instagram.com/cordaodeouromoc/" },
+  { nome: "Mestre Ton (Capoeira)", lat: -16.71839, lng: -43.87261, categoria: "capoeira", telefone: "+5538988366925", endereco: "Rua São Paulo, 833", avatar: "https://i.imgur.com/Rs78Tbn.jpeg", instagram: "https://www.instagram.com/ton_cdo/" }
+];
+
+const marcadoresCapoeira = [];
+const marcadoresEspaco = [];
+
+// Cria marcadores
+artistas.forEach(a => {
+  const iconHtml = a.categoria === 'capoeira' 
+    ? `<div class="custom-marker"><svg class="icon" viewBox="0 0 24 24" fill="green"><circle cx="12" cy="6" r="3"/><path d="M12 9 L12 20 M9 12 L15 12" stroke="green" stroke-width="2"/></svg><img src="${a.avatar}" class="avatar"></div>`
+    : `<div class="custom-marker"><svg class="icon" viewBox="0 0 24 24" fill="saddlebrown"><path d="M12 3 L2 12 H5 V20 H19 V12 H22 Z"/></svg><img src="${a.avatar}" class="avatar"></div>`;
+
+  const marker = L.marker([a.lat, a.lng], { icon: L.divIcon({ className: '', html: iconHtml, iconSize: [50,50], iconAnchor:[25,50], popupAnchor:[0,-50] }) }).addTo(map);
+
+  let popupContent = `<b>${a.nome}</b><br>📍 ${a.endereco}`;
+  if (a.telefone) popupContent += `<br><a href="https://wa.me/${a.telefone}" target="_blank" class="popup-link popup-whatsapp"><img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" class="popup-icon"> WhatsApp</a>`;
+  if (a.instagram) popupContent += `<br><a href="${a.instagram}" target="_blank" class="popup-link popup-instagram"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" class="popup-icon"> Instagram</a>`;
+  marker.bindPopup(popupContent);
+
+  if (a.categoria === 'capoeira') marcadoresCapoeira.push(marker);
+  if (a.categoria === 'espaco') marcadoresEspaco.push(marker);
+});
+
+// Filtros por categoria
+function toggleMarkers(array, show) { array.forEach(m => show ? map.addLayer(m) : map.removeLayer(m)); }
+document.getElementById('capoeiraCheckbox').addEventListener('change', e => toggleMarkers(marcadoresCapoeira, e.target.checked));
+document.getElementById('espacoCheckbox').addEventListener('change', e => toggleMarkers(marcadoresEspaco, e.target.checked));
 </script>
 </body>
 </html>
