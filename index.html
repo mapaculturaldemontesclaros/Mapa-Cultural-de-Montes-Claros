@@ -29,18 +29,34 @@
       margin-top: 5px;
       max-width: 220px;
     }
-    .popup-instagram {
-      display: inline-block;
+    .popup-link {
+      display: inline-flex;
+      align-items: center;
       margin-top: 8px;
       padding: 6px 10px;
-      background: #d62976;
-      color: white;
       border-radius: 5px;
       text-decoration: none;
       font-weight: bold;
+      font-size: 14px;
+      gap: 6px;
+    }
+    .popup-instagram {
+      background: #d62976;
+      color: white;
     }
     .popup-instagram:hover {
       background: #b71c5c;
+    }
+    .popup-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+    .popup-whatsapp:hover {
+      background: #1da851;
+    }
+    .popup-icon {
+      width: 18px;
+      height: 18px;
     }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -78,7 +94,7 @@
       nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)",
       lat: -16.71859,
       lng: -43.87262,
-      telefone: "+55 38 98836-6925",
+      telefone: "+5538988366925", // formato link WhatsApp
       endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
       imagem: "https://i.imgur.com/grvPSh2.png",
       instagram: "https://www.instagram.com/cordaodeouromoc/"
@@ -87,7 +103,7 @@
       nome: "Mestre Ton (Capoeira)",
       lat: -16.71839,
       lng: -43.87261,
-      telefone: "+55 38 98836-6925",
+      telefone: "+5538988366925",
       endereco: "Rua São Paulo, 833, Todos os Santos - Montes Claros, MG",
       imagem: "https://i.imgur.com/Rs78Tbn.jpeg",
       instagram: "https://www.instagram.com/ton_cdo/"
@@ -100,7 +116,6 @@
 
     let popupContent = `
       <b>${artista.nome}</b><br>
-      📞 ${artista.telefone}<br>
       📍 ${artista.endereco}
     `;
 
@@ -108,8 +123,22 @@
       popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" class="popup-img">`;
     }
 
+    // Botão WhatsApp
+    if (artista.telefone) {
+      popupContent += `
+        <br><a href="https://wa.me/${artista.telefone}" target="_blank" class="popup-link popup-whatsapp">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" class="popup-icon" alt="WhatsApp">
+          WhatsApp
+        </a>`;
+    }
+
+    // Botão Instagram
     if (artista.instagram) {
-      popupContent += `<br><a href="${artista.instagram}" target="_blank" class="popup-instagram">Instagram</a>`;
+      popupContent += `
+        <br><a href="${artista.instagram}" target="_blank" class="popup-link popup-instagram">
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" class="popup-icon" alt="Instagram">
+          Instagram
+        </a>`;
     }
 
     marcador.bindPopup(popupContent);
