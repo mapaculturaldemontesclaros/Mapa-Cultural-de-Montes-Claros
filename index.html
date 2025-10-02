@@ -2,28 +2,77 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>MAPA CULTURAL DE MONTES CLAROS</title>
+  <title>Mapa Cultural de Montes Claros</title>
   <style>
-    #map { width: 100%; height: 90vh; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    #map { 
+      width: 100%; 
+      height: 90vh; 
+    }
+    .popup-img {
+      border-radius: 10px;
+      margin-top: 5px;
+      max-width: 220px;
+    }
+    .popup-instagram {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: #d62976;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .popup-instagram:hover {
+      background: #b71c5c;
+    }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
 
-<h2>Mapa cultural de Montes Claros</h2>
+<header>
+  <h1>📍 Mapa Cultural de Montes Claros</h1>
+  <p>Conheça artistas, espaços culturais e iniciativas da cidade</p>
+</header>
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // Inicializa o mapa no centro do Brasil com zoom 4
-  const map = L.map('map').setView([-15.7801, -47.9292], 4);
+  // Inicializa o mapa centralizado em Montes Claros
+  const map = L.map('map').setView([-16.71859, -43.87262], 13);
 
   // Usa o mapa do OpenStreetMap
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   }).addTo(map);
 
-  // Dados dos artistas: nome, lat, lng, telefone, endereço, imagem e Instagram
+  // Ícone personalizado para artistas
+  const artistaIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/854/854878.png',
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
+    popupAnchor: [0, -35]
+  });
+
+  // Dados dos artistas
   const artistas = [
     {
       nome: "Grupo Cordão de Ouro Montes Claros (Espaço cultural)",
@@ -45,22 +94,22 @@
     }
   ];
 
-  // Adiciona marcadores e popups com as informações
+  // Adiciona marcadores e popups
   artistas.forEach(artista => {
-    const marcador = L.marker([artista.lat, artista.lng]).addTo(map);
+    const marcador = L.marker([artista.lat, artista.lng], { icon: artistaIcon }).addTo(map);
 
-    let popupContent = `<b>${artista.nome}</b><br>
-                        Telefone: ${artista.telefone}<br>
-                        Endereço: ${artista.endereco}`;
+    let popupContent = `
+      <b>${artista.nome}</b><br>
+      📞 ${artista.telefone}<br>
+      📍 ${artista.endereco}
+    `;
 
-    // Se tiver imagem, exibe a imagem
     if (artista.imagem) {
-      popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" width="200" style="border-radius: 10px; margin-top: 5px;">`;
+      popupContent += `<br><img src="${artista.imagem}" alt="Foto do artista" class="popup-img">`;
     }
 
-    // Se tiver Instagram, adiciona link
     if (artista.instagram) {
-      popupContent += `<br><a href="${artista.instagram}" target="_blank" style="color: #d62976; text-decoration: none;">🔗 Instagram</a>`;
+      popupContent += `<br><a href="${artista.instagram}" target="_blank" class="popup-instagram">Instagram</a>`;
     }
 
     marcador.bindPopup(popupContent);
