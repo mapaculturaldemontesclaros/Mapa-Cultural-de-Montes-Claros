@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<title>Mapa Cultural de Montes Claros - Filtros</title>
+<title>Mapa Cultural de Montes Claros - Satélite com Ruas</title>
 <style>
 body { margin: 0; font-family: Arial, sans-serif; background: #f4f4f4; color: #333; }
 header { background: #2c3e50; color: white; padding: 15px; text-align: center; }
@@ -42,8 +42,13 @@ header h1 { margin: 0; font-size: 1.8rem; }
 const map = L.map('map').setView([-16.71859, -43.87262], 12.5);
 
 // Camada satélite Esri
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+const satelite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri &mdash; Source: Esri, USGS, USDA, AeroGRID, IGN, and the GIS User Community'
+}).addTo(map);
+
+// Camada de labels transparente (Esri Streets Labels)
+const labels = L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Map data © Esri &mdash; Labels'
 }).addTo(map);
 
 // Dados dos artistas
@@ -93,7 +98,6 @@ artistas.forEach(artista => {
 
   marcador.bindPopup(popupContent);
 
-  // Armazena o marcador na categoria correspondente
   if (artista.categoria === 'capoeira') marcadoresCapoeira.push(marcador);
   if (artista.categoria === 'espaco') marcadoresEspaco.push(marcador);
 });
