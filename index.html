@@ -44,4 +44,22 @@ const bairrosGeoJSON = {
 // Estilo baseado na categoria
 function style(feature) {
   return {
-    fi
+    fillColor: feature.properties.categoria === 'capoeira' ? 'green' : 'saddlebrown',
+    weight: 2,
+    color: 'white',
+    fillOpacity: 0.5
+  };
+}
+
+// Adiciona GeoJSON e labels permanentes
+L.geoJSON(bairrosGeoJSON, {
+  style: style,
+  onEachFeature: function(feature, layer) {
+    if (feature.properties && feature.properties.nome) {
+      layer.bindTooltip(feature.properties.nome, { permanent: true, direction: 'center' });
+    }
+  }
+}).addTo(map);
+</script>
+</body>
+</html>
